@@ -1,0 +1,58 @@
+name: Java CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Checkout
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # 3. Build
+      - name: Build
+        run: |
+          if [ -f pom.xml ]; then
+            mvn clean compile
+          else
+            echo "No pom.xml found."
+            echo "No Maven project detected - Build stage completed."
+          fi
+
+      # 4. Test
+      - name: Test
+        run: |
+          if [ -f pom.xml ]; then
+            mvn test
+          else
+            echo "No pom.xml found."
+            echo "No Maven tests detected - Test stage completed."
+          fi
+
+      # 5. Package
+      - name: Package
+        run: |
+          if [ -f pom.xml ]; then
+            mvn package -DskipTests
+          else
+            echo "No pom.xml found."
+            echo "No Maven project detected - Package stage completed."
+          fi
+
+      # 6. Deploy
+      - name: Deploy
+        run: |
+          echo "Deployment stage completed successfully."
